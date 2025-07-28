@@ -1,0 +1,8 @@
+#전체무시
+Witch's_parmacy/*
+
+# 스크립트 폴더는 추적
+!Witch's_parmacy/Assets/Script/
+
+# 스크립트 안에 파일들도 추적
+!Witch's_parmacy/Assets/Script/**
