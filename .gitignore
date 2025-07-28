@@ -2,7 +2,9 @@
 Witch's_parmacy/*
 
 #에셋폴더 허용
-!Witch's_parmacy/Asset/
+!Witch's_parmacy/Assets/
+
+Witch's_parmacy/Assets/*
 
 # 스크립트 폴더는 추적
 !Witch's_parmacy/Assets/Script/
