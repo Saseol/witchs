@@ -1,22 +1,24 @@
 using UnityEngine;
 
+// 플레이어 유닛의 전투 상태와 행동 게이지를 관리하는 클래스
 public class PlayerUnit : MonoBehaviour
 {
-    [Header("Unit Info")]
-    public string unitName = "Justin";
-    public int maxHP = 100;
-    public int currentHP;
-    public int attackPower = 20;
-    public int defense = 5;
-    public float speed = 20f; // ������ ä��� �ӵ�
+    [Header("유닛 정보")]
+    public string unitName = "Justin"; // 유닛 이름
+    public int maxHP = 100;             // 최대 체력
+    public int currentHP;               // 현재 체력
+    public int attackPower = 20;        // 공격력
+    public int defense = 5;             // 방어력
+    public float speed = 20f;           // 행동 게이지가 차는 속도
 
-    [Header("Battle State")]
-    public bool isAlive = true;
-    private float atGauge = 0f;
+    [Header("전투 상태")]
+    public bool isAlive = true;         // 생존 여부
+    private float atGauge = 0f;         // 현재 행동 게이지 (0~100)
 
 
     void Start()
     {
+        // 시작 시 체력 초기화 및 아이콘 위치 갱신
         currentHP = maxHP;
         UpdateIconPosition();
     }
@@ -25,7 +27,7 @@ public class PlayerUnit : MonoBehaviour
     {
         if (!isAlive) return;
 
-        // ������ ����
+        // 행동 게이지가 100 미만일 때 증가 및 아이콘 위치 갱신
         if (atGauge < 100f)
         {
             atGauge += speed * Time.deltaTime;
@@ -35,7 +37,7 @@ public class PlayerUnit : MonoBehaviour
     }
 
     /// <summary>
-    /// �������� �غ�Ǿ����� Ȯ��
+    /// 행동 게이지가 100에 도달했고 살아있으면 행동 가능
     /// </summary>
     public bool IsReady()
     {
@@ -43,7 +45,7 @@ public class PlayerUnit : MonoBehaviour
     }
 
     /// <summary>
-    /// �ൿ ���� �� ������ �ʱ�ȭ
+    /// 행동 후 게이지를 0으로 초기화
     /// </summary>
     public void ResetGauge()
     {
@@ -52,7 +54,7 @@ public class PlayerUnit : MonoBehaviour
     }
 
     /// <summary>
-    /// ���� ó��
+    /// 데미지 처리: 방어력을 고려하여 체력 감소
     /// </summary>
     public void TakeDamage(int damage)
     {

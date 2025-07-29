@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+// íƒ€ì„ë¼ì¸ì—ì„œ ì•„ì´ì½˜ì˜ ìœ„ì¹˜ì™€ í–‰ë™ ê²Œì´ì§€ë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
 public class ActionTimelineIcon : MonoBehaviour
 {
-    public RectTransform timelineBar; // °ÔÀÌÁö ¹Ù RectTransform
-    public RectTransform icon;        // ¾ÆÀÌÄÜ RectTransform
-    public float atGauge = 0f;        // ÇöÀç °ÔÀÌÁö (0 ~ 100)
-    public float speed = 20f;         // ÃÊ´ç Áõ°¡·®
+    public RectTransform timelineBar; // íƒ€ì„ë¼ì¸ ë°”ì˜ RectTransform
+    public RectTransform icon;        // ìœ ë‹› ì•„ì´ì½˜ì˜ RectTransform
+    public float atGauge = 0f;        // í˜„ì¬ í–‰ë™ ê²Œì´ì§€ (0 ~ 100)
+    public float speed = 20f;         // ê²Œì´ì§€ê°€ ì°¨ëŠ” ì†ë„
 
-    private float minX;
-    private float maxX;
+    private float minX; // ì•„ì´ì½˜ì´ ì›€ì§ì¼ ìˆ˜ ìˆëŠ” ìµœì†Œ Xê°’
+    private float maxX; // ì•„ì´ì½˜ì´ ì›€ì§ì¼ ìˆ˜ ìˆëŠ” ìµœëŒ€ Xê°’
 
     void Start()
     {
-        // timelineBarÀÇ °¡·Î Å©±â¿¡ ¸ÂÃç¼­ ½ÃÀÛ/³¡ ÁÂÇ¥ °è»ê
+        // íƒ€ì„ë¼ì¸ ë°”ì˜ í¬ê¸°ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì•„ì´ì½˜ ì´ë™ ë²”ìœ„ ì„¤ì •
         float halfWidth = timelineBar.rect.width / 2f;
         minX = -halfWidth;
         maxX = halfWidth;
@@ -21,19 +22,20 @@ public class ActionTimelineIcon : MonoBehaviour
 
     void Update()
     {
-        // °ÔÀÌÁö Áõ°¡
+        // ë§¤ í”„ë ˆì„ë§ˆë‹¤ í–‰ë™ ê²Œì´ì§€ ì¦ê°€
         atGauge += speed * Time.deltaTime;
         if (atGauge > 100f) atGauge = 100f;
 
-        // ºñÀ² °è»ê
+        // ê²Œì´ì§€ì— ë”°ë¼ ì•„ì´ì½˜ ìœ„ì¹˜ ê³„ì‚°
         float ratio = atGauge / 100f;
         float posX = Mathf.Lerp(minX, maxX, ratio);
 
-        // ¾ÆÀÌÄÜ À§Ä¡ ¾÷µ¥ÀÌÆ®
+        // ì•„ì´ì½˜ì˜ ì‹¤ì œ ìœ„ì¹˜ ê°±ì‹  (Yì¶•ì€ ë°”ì—ì„œ 80ë§Œí¼ ìœ„)
         Vector3 newPos = new Vector3(posX, timelineBar.position.y + 80f, 0);
         icon.localPosition = newPos;
 
-        if (atGauge >= 100f) // atgauge ÃÊ±âÈ­ (ÀÓ½Ã)
+        // ê²Œì´ì§€ê°€ 100ì— ë„ë‹¬í•˜ë©´ ì´ˆê¸°í™”
+        if (atGauge >= 100f)
         {
             atGauge = 0f;
         }

@@ -3,18 +3,19 @@ using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour
 {
-    [Header("Managers")]
-    public CommandMenu commandMenu;   // ¸í·É ¸Ş´º
+    [Header("ë§¤ë‹ˆì €ë“¤")]
+    public CommandMenu commandMenu;   // ì»¤ë§¨ë“œ ë©”ë‰´ ê´€ë¦¬
 
-    [Header("Timeline")]
-    public RectTransform timelineBar;
-    public List<TimelineUnit> units;  // ÀüÅõ À¯´Ö ¸®½ºÆ®
+    [Header("íƒ€ì„ë¼ì¸")]
+    public RectTransform timelineBar; // íƒ€ì„ë¼ì¸ ë°” UI
+    public List<TimelineUnit> units;  // ì „íˆ¬ì— ì°¸ì—¬í•˜ëŠ” ìœ ë‹› ë¦¬ìŠ¤íŠ¸
 
+    // í˜„ì¬ í–‰ë™í•  ì°¨ë¡€ì¸ ìœ ë‹›
     private TimelineUnit activeUnit = null;
 
     void Start()
     {
-        // ÀüÅõ ½ÃÀÛ ½Ã ¸ğµç À¯´Ö ÃÊ±âÈ­
+        // ëª¨ë“  ìœ ë‹›ì˜ íƒ€ì„ë¼ì¸ ìœ„ì¹˜ ì´ˆê¸°í™”
         foreach (var unit in units)
         {
             unit.Init(timelineBar);
@@ -23,59 +24,55 @@ public class BattleManager : MonoBehaviour
 
     void Update()
     {
-        if (activeUnit != null) return; // ÀÌ¹Ì ¸í·É ´ë±â ÁßÀÌ¸é °ÔÀÌÁö ¸ØÃã
+        // ì´ë¯¸ í–‰ë™ ì¤‘ì¸ ìœ ë‹›ì´ ìˆìœ¼ë©´ ëŒ€ê¸°
+        if (activeUnit != null) return;
 
+        // ëª¨ë“  ìœ ë‹›ì˜ ê²Œì´ì§€ë¥¼ ì—…ë°ì´íŠ¸
         foreach (var unit in units)
         {
             unit.UpdateGauge(Time.deltaTime);
 
-            // °ÔÀÌÁö 100% µµ´Ş ½Ã
+            // ê²Œì´ì§€ê°€ 100%ê°€ ë˜ë©´ í–‰ë™ ì°¨ë¡€
             if (unit.IsReady() && activeUnit == null)
             {
                 activeUnit = unit;
 
                 if (unit.isPlayer)
                 {
-                    // ÇÃ·¹ÀÌ¾î À¯´ÖÀÌ¸é CommandMenu ¿ÀÇÂ
+                    // í”Œë ˆì´ì–´ ìœ ë‹›ì´ë©´ ì»¤ë§¨ë“œ ë©”ë‰´ ì˜¤í”ˆ
                     commandMenu.OpenMenu(OnCommandChosen);
 
                 }
                 else
                 {
-                    // ÀûÀÌ¸é AI Çàµ¿ ½ÇÇà
+                    // ì  ìœ ë‹›ì´ë©´ AIë¡œ ìë™ í–‰ë™
                     ExecuteAction(unit, "Attack");
                 }
             }
         }
-
-
-
     }
 
     /// <summary>
-    /// CommandMenu¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ Çàµ¿À» °í¸¥ °æ¿ì È£Ãâ
+    /// ì»¤ë§¨ë“œ ë©”ë‰´ì—ì„œ í”Œë ˆì´ì–´ê°€ í–‰ë™ì„ ì„ íƒí–ˆì„ ë•Œ í˜¸ì¶œ
     /// </summary>
     void OnCommandChosen(string command)
     {
         ExecuteAction(activeUnit, command);
-
     }
 
     /// <summary>
-    /// ½ÇÁ¦ Çàµ¿ ½ÇÇà
+    /// ì‹¤ì œ ìœ ë‹›ì˜ í–‰ë™ì„ ì‹¤í–‰
     /// </summary>
     void ExecuteAction(TimelineUnit unit, string command)
     {
-        Debug.Log($"{unit.unitName} uses {command}!");
+        Debug.Log($"{unit.unitName}ê°€ {command}ë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤!");
 
-        // TODO: ½ÇÁ¦ °ø°İ, ½ºÅ³, ¾ÆÀÌÅÛ »ç¿ë ·ÎÁ÷ ÀÛ¼º
+        // TODO: ì‹¤ì œ ê³µê²©, ìŠ¤í‚¬, ì•„ì´í…œ ë“± í–‰ë™ êµ¬í˜„
 
-
-        // Çàµ¿ ¿Ï·á ÈÄ °ÔÀÌÁö ÃÊ±âÈ­
+        // í–‰ë™ í›„ ê²Œì´ì§€ ì´ˆê¸°í™”
         unit.ResetGauge();
 
-        // ÅÏ Á¾·á
+        // ë‹¤ìŒ í„´ì„ ìœ„í•´ activeUnit ì´ˆê¸°í™”
         activeUnit = null;
-
     }
 }
