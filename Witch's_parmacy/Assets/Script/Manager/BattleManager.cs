@@ -1,78 +1,111 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    [Header("매니저들")]
-    public CommandMenu commandMenu;   // 커맨드 메뉴 관리
+    public enum BattleState { Start, PlayerTurn, EnemyTurn, Action, Win, Lose }
+    public BattleState State;
 
-    [Header("타임라인")]
-    public RectTransform timelineBar; // 타임라인 바 UI
-    public List<TimelineUnit> units;  // 전투에 참여하는 유닛 리스트
+    public List<Character> playerParty;
+    public List<Character> enemyParty;
 
-    // 현재 행동할 차례인 유닛
-    private TimelineUnit activeUnit = null;
+    private Queue<Character> actionQueue = new Queue<Character>();
 
     void Start()
     {
-        // 모든 유닛의 타임라인 위치 초기화
-        foreach (var unit in units)
+        State = BattleState.Start;
+        SetupBattle();
+    }
+
+    void SetupBattle()
+    {
+        // 캐릭터, 위치, UI 등 초기화
+        EnqueueAllCharacters();
+        State = BattleState.Action;
+        NextAction();
+    }
+
+    void EnqueueAllCharacters()
+    {
+        actionQueue.Clear();
+        List<Character> allCharacters = new List<Character>();
+        allCharacters.AddRange(playerParty);
+        allCharacters.AddRange(enemyParty);
+
+        // 이니셔티브/속도 순으로 정렬
+        allCharacters.Sort((a, b) => b.Speed.CompareTo(a.Speed));
+        foreach (var character in allCharacters)
+            actionQueue.Enqueue(character);
+    }
+
+    void NextAction()
+    {
+        if (CheckBattleEnd()) return;
+
+        if (actionQueue.Count == 0)
+            EnqueueAllCharacters();
+
+        Character current = actionQueue.Dequeue();
+        if (playerParty.Contains(current))
         {
-            unit.Init(timelineBar);
+            State = BattleState.PlayerTurn;
+            // 명령 UI 표시, 플레이어 입력 대기
+        }
+        else
+        {
+            State = BattleState.EnemyTurn;
+            // AI가 행동 선택
+            EnemyAction(current);
         }
     }
 
-    void Update()
+    public void OnPlayerAction(Character player, Skill skill, Character target)
     {
-        // 이미 행동 중인 유닛이 있으면 대기
-        if (activeUnit != null) return;
+        // 플레이어 행동 실행
+        skill.Use(player, target);
+        NextAction();
+    }
 
-        // 모든 유닛의 게이지를 업데이트
-        foreach (var unit in units)
+    void EnemyAction(Character enemy)
+    {
+        // 간단한 AI: 랜덤 플레이어 공격
+        Character target = playerParty[Random.Range(0, playerParty.Count)];
+        Skill skill = enemy.GetDefaultSkill();
+        skill.Use(enemy, target);
+        NextAction();
+    }
+
+    bool CheckBattleEnd()
+    {
+        if (playerParty.TrueForAll(c => c.IsDead))
         {
-            unit.UpdateGauge(Time.deltaTime);
-
-            // 게이지가 100%가 되면 행동 차례
-            if (unit.IsReady() && activeUnit == null)
-            {
-                activeUnit = unit;
-
-                if (unit.isPlayer)
-                {
-                    // 플레이어 유닛이면 커맨드 메뉴 오픈
-                    commandMenu.OpenMenu(OnCommandChosen);
-
-                }
-                else
-                {
-                    // 적 유닛이면 AI로 자동 행동
-                    ExecuteAction(unit, "Attack");
-                }
-            }
+            State = BattleState.Lose;
+            // 패배 UI 표시
+            return true;
         }
+        if (enemyParty.TrueForAll(c => c.IsDead))
+        {
+            State = BattleState.Win;
+            // 승리 UI 표시
+            return true;
+        }
+        return false;
     }
+}
 
-    /// <summary>
-    /// 커맨드 메뉴에서 플레이어가 행동을 선택했을 때 호출
-    /// </summary>
-    void OnCommandChosen(string command)
+// 예시 Character와 Skill 클래스 (간략화)
+public class Character
+{
+    public string Name;
+    public int Speed;
+    public bool IsDead;
+    public Skill GetDefaultSkill() { return new Skill(); }
+}
+
+public class Skill
+{
+    public void Use(Character user, Character target)
     {
-        ExecuteAction(activeUnit, command);
-    }
-
-    /// <summary>
-    /// 실제 유닛의 행동을 실행
-    /// </summary>
-    void ExecuteAction(TimelineUnit unit, string command)
-    {
-        Debug.Log($"{unit.unitName}가 {command}를 사용합니다!");
-
-        // TODO: 실제 공격, 스킬, 아이템 등 행동 구현
-
-        // 행동 후 게이지 초기화
-        unit.ResetGauge();
-
-        // 다음 턴을 위해 activeUnit 초기화
-        activeUnit = null;
+        // 스킬 로직 구현
     }
 }
